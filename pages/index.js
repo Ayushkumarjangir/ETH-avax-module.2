@@ -7,7 +7,7 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
-  const [amount, setAmount] = useState(0); // User-entered amount
+  const [amount, setAmount] = useState(0);
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const atmABI = atm_abi.abi;
@@ -29,7 +29,7 @@ export default function HomePage() {
 
   const connectAccount = async () => {
     if (!ethWallet) {
-      alert("MetaMask wallet is required to connect");
+      alert("Please connect to the METAMASK");
       return;
     }
 
@@ -38,7 +38,7 @@ export default function HomePage() {
       handleAccount(accounts[0]);
       getATMContract();
     } catch (error) {
-      console.error("Error connecting account:", error);
+      console.error("Error while connecting account:", error);
     }
   };
 
@@ -60,7 +60,7 @@ export default function HomePage() {
       if (error.reason) {
         console.error("Revert reason:", error.reason);
       } else {
-        console.error("Error getting balance:", error);
+        console.error("Error while getting balance:", error);
       }
     }
   };
@@ -84,22 +84,25 @@ export default function HomePage() {
         let tx = await atm.withdraw(amount);
         await tx.wait();
         getBalance();
-        setAmount(0); // Reset amount after successful withdrawal
+        setAmount(0);
       } catch (error) {
         console.error("Error withdrawing:", error);
       }
     }
   };
 
+  const disconnectAccount = () => {
+    setAccount(undefined);
+    setBalance(undefined);
+  };
+
   const initUser = () => {
-    // Check to see if user has Metamask
     if (!ethWallet) {
-      return <p>Please install Metamask in order to use this ATM.</p>;
+      return <p>PInstall METAMASK from browser for transaction</p>;
     }
 
-    // Check to see if user is connected. If not, connect to their account
     if (!account) {
-      return <button onClick={connectAccount}>connect the metamask wallet to do transactions</button>;
+      return <button onClick={connectAccount}>Try to connect With METAMASK</button>;
     }
 
     if (balance === undefined) {
@@ -110,14 +113,23 @@ export default function HomePage() {
       <div>
         <p>Your Account: {account}</p>
         <p>Your Balance: {balance}</p>
+        {account && (
+          <button className="disconnect-button" onClick={disconnectAccount}>
+            Disconnect Account
+          </button>
+        )}
         <input
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Enter amount"
         />
-        <button onClick={deposit}>Deposit</button>
-        <button onClick={withdraw}>Withdraw</button>
+        <button className="action-button" onClick={deposit}>
+          Deposit Funds
+        </button>
+        <button className="action-button" onClick={withdraw}>
+          Withdraw Funds
+        </button>
       </div>
     );
   };
@@ -129,12 +141,33 @@ export default function HomePage() {
   return (
     <main className="container">
       <header>
-        <h1>Welcome to Nitin's wallet</h1>
+        <h1>Welcome to Ayush Kumar's Wallet</h1>
       </header>
       {initUser()}
       <style jsx>{`
         .container {
           text-align: center;
+          background-color: #f0f0f0;
+        }
+
+        .action-button {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          cursor: pointer;
+          margin: 5px;
+          border-radius: 5px;
+        }
+
+        .disconnect-button {
+          background-color: #dc3545;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          cursor: pointer;
+          margin: 5px;
+          border-radius: 5px;
         }
       `}</style>
     </main>
